@@ -137,7 +137,7 @@ if __name__ == '__main__':
         with open(os.path.join(savedir, 'args.json'), 'w') as f:
             json.dump(vars(args), f)
 
-    with sess = tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
+    with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
         # Create training graph and replay buffer
         def model_wrapper(img_in, num_actions, scope, **kwargs):
             actual_model = dueling_model if args.dueling else model
