@@ -295,6 +295,10 @@ def learn(env,
                     logger.record_tabular("mean 100 frame reward", frame_rewards[-1])
                 logger.record_tabular("% time spent exploring", int(100 * exploration.value(t)))
                 logger.dump_tabular()
+                logger.log("Saving rewards")
+                jiangFile = open('./frame_rewards.bin','wb')
+                pickle.dump(frame_rewards,jiangFile)
+                jiangFile.close()
 
             if (checkpoint_freq is not None and t > learning_starts and
                     num_episodes > 100 and t % checkpoint_freq == 0):
@@ -303,9 +307,6 @@ def learn(env,
                         logger.log("Saving model due to mean reward increase: {} -> {}".format(
                                    saved_mean_reward, mean_100ep_reward))
                     U.save_state(model_file)
-                    jiangFile = open('./frame_rewards.bin','wb')
-                    pickle.dump(frame_rewards,jiangFile)
-                    jiangFile.close()
                     model_saved = True
                     saved_mean_reward = mean_100ep_reward
         if model_saved:
