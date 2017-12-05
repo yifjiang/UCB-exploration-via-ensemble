@@ -221,8 +221,10 @@ def learn(env,
     U.initialize()
     update_target()
 
-    episode_rewards = [0.0]
+    episode_rewards = [0.0] 
     frame_rewards = []
+    mean_frame100_rewards = []
+    mean_episode100_rewards = []
     saved_mean_reward = None
     obs = env.reset()
     reset = True
@@ -262,7 +264,8 @@ def learn(env,
 
             episode_rewards[-1] += rew
             frame_rewards.append(rew)
-            frame_rewards[-1] = round(np.mean(frame_rewards[-100:]), 5)
+            mean_frame100_rewards.append(round(np.mean(frame_rewards[-100:]), 5))
+            mean_episode100_rewards.append(round(np.mean(episode_rewards[-101:-1]), 1))
             if done:
                 obs = env.reset()
                 episode_rewards.append(0.0)
@@ -291,13 +294,16 @@ def learn(env,
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)
                 logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
-                if len(frame_rewards)>0:
-                    logger.record_tabular("mean 100 frame reward", frame_rewards[-1])
+                if len(mean_frame100_rewards)>0:
+                    logger.record_tabular("mean 100 frame reward", mean_frame100_rewards[-1])
                 logger.record_tabular("% time spent exploring", int(100 * exploration.value(t)))
                 logger.dump_tabular()
                 logger.log("Saving rewards")
-                jiangFile = open('./frame_rewards.bin','wb')
-                pickle.dump(frame_rewards,jiangFile)
+                jiangFile = open('./mean_frame100_rewards.bin','wb')
+                pickle.dump(mean_frame100_rewards,jiangFile)
+                jiangFile.close()
+                jiangFile = open('./mean_episode100_rewards.bin','wb')
+                pickle.dump(mean_episode100_rewards, jiangFile)
                 jiangFile.close()
 
             if (checkpoint_freq is not None and t > learning_starts and
