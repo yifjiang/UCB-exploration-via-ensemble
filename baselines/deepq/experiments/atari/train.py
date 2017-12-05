@@ -242,6 +242,7 @@ if __name__ == '__main__':
             if start_time is not None:
                 steps_per_iter.update(info['steps'] - start_steps)
                 iteration_time_est.update(time.time() - start_time)
+            print(info)
             start_time, start_steps = time.time(), info["steps"]
 
             # Save the model and training state.
