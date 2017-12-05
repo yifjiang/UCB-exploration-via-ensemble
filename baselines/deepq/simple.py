@@ -12,6 +12,15 @@ from baselines import logger
 from baselines.common.schedules import LinearSchedule
 from baselines import deepq
 from baselines.deepq.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
+from baselines.common.misc_util import (
+    boolean_flag,
+    pickle_load,
+    pretty_eta,
+    relatively_safe_pickle_dump,
+    set_global_seeds,
+    RunningAvg,
+)
+import pickle
 
 
 class ActWrapper(object):
@@ -213,6 +222,7 @@ def learn(env,
     update_target()
 
     episode_rewards = [0.0]
+    frame_rewards = []
     saved_mean_reward = None
     obs = env.reset()
     reset = True
@@ -251,6 +261,8 @@ def learn(env,
             obs = new_obs
 
             episode_rewards[-1] += rew
+            frame_rewards.append(rew)
+            frame_rewards[-1] = round(np.mean(frame_rewards[-100:]), 5)
             if done:
                 obs = env.reset()
                 episode_rewards.append(0.0)
@@ -279,6 +291,8 @@ def learn(env,
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)
                 logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
+                if len(frame_rewards)>0:
+                    logger.record_tabular("mean 100 frame reward", frame_rewards[-1])
                 logger.record_tabular("% time spent exploring", int(100 * exploration.value(t)))
                 logger.dump_tabular()
 
@@ -289,6 +303,9 @@ def learn(env,
                         logger.log("Saving model due to mean reward increase: {} -> {}".format(
                                    saved_mean_reward, mean_100ep_reward))
                     U.save_state(model_file)
+                    jiangFile = open('./frame_rewards.bin','wb')
+                    pickle.dump(frame_rewards,jiangFile)
+                    jiangFile.close()
                     model_saved = True
                     saved_mean_reward = mean_100ep_reward
         if model_saved:
