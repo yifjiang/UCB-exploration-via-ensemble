@@ -32,7 +32,6 @@ def main():
         q_func=model,
         lr=1e-4,
         max_timesteps=args.num_timesteps,
-        buffer_size=10000,
         exploration_fraction=0.1,
         exploration_final_eps=0.01,
         train_freq=4,
