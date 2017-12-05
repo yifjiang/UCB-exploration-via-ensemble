@@ -25,7 +25,7 @@ from baselines import bench
 # from baselines.common.atari_wrappers_deprecated import wrap_dqn
 from baselines.common.atari_wrappers import wrap_deepmind
 from baselines.common.azure_utils import Container
-from .model import model, dueling_model
+from baselines.deepq.experiments.atari.model import model, dueling_model
 
 
 def parse_args():
