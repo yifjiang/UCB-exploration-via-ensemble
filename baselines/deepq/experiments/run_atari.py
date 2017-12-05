@@ -27,6 +27,8 @@ def main():
     )
     act = deepq.learn(
         env,
+        batch_size=32,
+        buffer_size=1000000,
         q_func=model,
         lr=1e-4,
         max_timesteps=args.num_timesteps,
@@ -35,7 +37,7 @@ def main():
         exploration_final_eps=0.01,
         train_freq=4,
         learning_starts=10000,
-        target_network_update_freq=1000,
+        target_network_update_freq=10000,
         gamma=0.99,
         prioritized_replay=bool(args.prioritized)
     )
