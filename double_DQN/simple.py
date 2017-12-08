@@ -181,6 +181,10 @@ def learn(env,
     def make_obs_ph(name):
         return U.BatchInput(observation_space_shape, name=name)
 
+    global_step = tf.Variable(0, trainable=False)
+
+    lr = tf.train.polynomial_decay(1e-4, global_step, decay_steps=4e6, end_learning_rate=5e-5)
+
     act, train, update_target, debug = build_train(
         make_obs_ph=make_obs_ph,
         q_func=q_func,
@@ -233,6 +237,7 @@ def learn(env,
         model_saved = False
         model_file = os.path.join(td, "model")
         for t in range(max_timesteps):
+
             if callback is not None:
                 if callback(locals(), globals()):
                     break
@@ -305,11 +310,8 @@ def learn(env,
                 logger.record_tabular("% time spent exploring", int(100 * update_eps))
                 logger.dump_tabular()
                 logger.log("Saving rewards")
-                jiangFile = open('./mean_frame100_rewards.bin','wb')
-                pickle.dump(mean_frame100_rewards,jiangFile)
-                jiangFile.close()
-                jiangFile = open('./mean_episode100_rewards.bin','wb')
-                pickle.dump(mean_episode100_rewards, jiangFile)
+                jiangFile = open('./reward_stats.bin','wb')
+                pickle.dump((mean_frame100_rewards, mean_episode100_rewards, episode_rewards, frame_rewards), jiangFile)
                 jiangFile.close()
 
             if (checkpoint_freq is not None and t > learning_starts and
