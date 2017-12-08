@@ -7,11 +7,12 @@ import cloudpickle
 import numpy as np
 
 import gym
+from double_DQN.build_graph import build_train
+import double_DQN.models
 import baselines.common.tf_util as U
 from baselines import logger
 from baselines.common.schedules import LinearSchedule
-from baselines import deepq
-from baselines.deepq.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
+from double_DQN.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
 from baselines.common.misc_util import (
     boolean_flag,
     pickle_load,
@@ -32,7 +33,7 @@ class ActWrapper(object):
     def load(path):
         with open(path, "rb") as f:
             model_data, act_params = cloudpickle.load(f)
-        act = deepq.build_act(**act_params)
+        act = build_act(**act_params)
         sess = tf.Session()
         sess.__enter__()
         with tempfile.TemporaryDirectory() as td:
@@ -90,8 +91,6 @@ def learn(env,
           lr=5e-4,
           max_timesteps=100000,
           buffer_size=50000,
-          exploration_fraction=0.1,
-          exploration_final_eps=0.02,
           train_freq=1,
           batch_size=32,
           print_freq=100,
@@ -182,7 +181,7 @@ def learn(env,
     def make_obs_ph(name):
         return U.BatchInput(observation_space_shape, name=name)
 
-    act, train, update_target, debug = deepq.build_train(
+    act, train, update_target, debug = build_train(
         make_obs_ph=make_obs_ph,
         q_func=q_func,
         num_actions=env.action_space.n,
@@ -213,9 +212,11 @@ def learn(env,
         replay_buffer = ReplayBuffer(buffer_size)
         beta_schedule = None
     # Create the schedule for exploration starting from 1.
+    '''
     exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * max_timesteps),
                                  initial_p=1.0,
                                  final_p=exploration_final_eps)
+    '''
 
     # Initialize the parameters and copy them to the target network.
     U.initialize()
@@ -238,8 +239,13 @@ def learn(env,
             # Take action and update exploration to the newest value
             kwargs = {}
             if not param_noise:
-                update_eps = exploration.value(t)
-                update_param_noise_threshold = 0.
+                if t < 1e6:
+                    update_eps = 1 - t * (9e-7)
+                elif t < 5e6:
+                    update_eps = 0.1225 - t * (2.25e-8)
+                else:
+                    update_eps = 0.01
+                update_param_noise_threshold = 0
             else:
                 update_eps = 0.
                 # Compute the threshold such that the KL divergence between perturbed and non-perturbed
@@ -296,7 +302,7 @@ def learn(env,
                 logger.record_tabular("mean 100 episode reward", mean_100ep_reward)
                 if len(mean_frame100_rewards)>0:
                     logger.record_tabular("mean 100 frame reward", mean_frame100_rewards[-1])
-                logger.record_tabular("% time spent exploring", int(100 * exploration.value(t)))
+                logger.record_tabular("% time spent exploring", int(100 * update_eps))
                 logger.dump_tabular()
                 logger.log("Saving rewards")
                 jiangFile = open('./mean_frame100_rewards.bin','wb')

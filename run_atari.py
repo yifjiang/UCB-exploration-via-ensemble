@@ -1,6 +1,8 @@
 import gym
 
-from baselines import deepq
+from double_DQN import models
+from double_DQN import simple
+from double_DQN import wrap_atari_dqn
 from baselines.common import set_global_seeds
 from baselines import bench
 import argparse
@@ -19,13 +21,13 @@ def main():
     set_global_seeds(args.seed)
     env = make_atari(args.env)
     env = bench.Monitor(env, logger.get_dir())
-    env = deepq.wrap_atari_dqn(env)
-    model = deepq.models.cnn_to_mlp(
+    env = wrap_atari_dqn(env)
+    model = models.cnn_to_mlp(
         convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
         hiddens=[256],
         dueling=bool(args.dueling),
     )
-    act = deepq.learn(
+    act = simple.learn(
         env,
         batch_size=32,
         # buffer_size=1000000,
@@ -33,8 +35,6 @@ def main():
         lr=1e-4,
         max_timesteps=args.num_timesteps,
         buffer_size=10000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.01,
         train_freq=4,
         learning_starts=10000,
         target_network_update_freq=10000,
