@@ -8,6 +8,7 @@ from baselines import bench
 import argparse
 from baselines import logger
 from baselines.common.atari_wrappers import make_atari
+import my_UpNDown
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
