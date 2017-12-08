@@ -3,11 +3,11 @@ import gym
 from double_DQN import models
 from double_DQN import simple
 from double_DQN import wrap_atari_dqn
-from my_baselines.common import set_global_seeds
-from my_baselines import bench
+from baselines.common import set_global_seeds
+from baselines import bench
 import argparse
-from my_baselines import logger
-from my_baselines.common.atari_wrappers import make_atari
+from baselines import logger
+from baselines.common.atari_wrappers import make_atari
 import my_UpNDown
 
 def main():
