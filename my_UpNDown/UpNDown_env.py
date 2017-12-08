@@ -16,5 +16,7 @@ class my_UpNDownEnv(AtariEnv):
                 ob_list = observation
             else:
                 ob_list = np.append(ob_list, observation, axis = 0)
+            if done:
+                break
 
         return ob_list, reward, done, info
