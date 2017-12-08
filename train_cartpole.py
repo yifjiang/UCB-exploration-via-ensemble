@@ -1,6 +1,7 @@
 import gym
 
-from baselines import deepq
+from double_DQN import models
+from double_DQN import simple
 
 
 def callback(lcl, glb):
@@ -11,15 +12,13 @@ def callback(lcl, glb):
 
 def main():
     env = gym.make("CartPole-v0")
-    model = deepq.models.mlp([64])
-    act = deepq.learn(
+    model = models.mlp([64])
+    act = simple.learn(
         env,
         q_func=model,
         lr=1e-3,
         max_timesteps=100000,
         buffer_size=50000,
-        exploration_fraction=0.1,
-        exploration_final_eps=0.02,
         print_freq=10,
         callback=callback
     )
