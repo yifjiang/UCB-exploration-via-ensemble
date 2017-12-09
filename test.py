@@ -1,5 +1,6 @@
 import gym
 import my_UpNDown
 
-env = gym.make('my_UpNDownEnv-v0').unwrapped
-print(env.observation_space.shape)
+env = gym.make('my_UpNDownNoFrameskip-v0').unwrapped
+ob, r, done, info = env.step(3)
+print(env.observation_space)
