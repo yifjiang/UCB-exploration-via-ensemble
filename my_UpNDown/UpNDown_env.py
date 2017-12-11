@@ -4,7 +4,7 @@ import numpy as np
 class my_UpNDownEnv(AtariEnv):
     def __init__(self):
         super(my_UpNDownEnv, self).\
-            __init__(game = 'up_n_down', obs_type = 'image', frameskip = 0)
+            __init__(game = 'up_n_down', obs_type = 'image', frameskip = 1, repeat_action_probability = 0.25)
         self.observation_space = spaces.Box(low = 0, high = 255, shape = (840, 160, 3))
 
     def _step(self, action):
@@ -29,3 +29,4 @@ class my_UpNDownEnv(AtariEnv):
                 break
 
         return ob_list, reward_sum/4, done, info
+#        return observation, reward_sum/4, done, info
