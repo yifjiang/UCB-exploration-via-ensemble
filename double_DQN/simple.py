@@ -237,7 +237,6 @@ def learn(env,
         model_saved = False
         model_file = os.path.join(td, "model")
         for t in range(max_timesteps):
-            print (t)
 
             if callback is not None:
                 if callback(locals(), globals()):
@@ -302,7 +301,6 @@ def learn(env,
 
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             num_episodes = len(episode_rewards)
-            print (num_episodes)
             if done and print_freq is not None and len(episode_rewards) % print_freq == 0:
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)

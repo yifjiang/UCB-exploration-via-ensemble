@@ -13,8 +13,8 @@ class my_UpNDownEnv(AtariEnv):
         for i in range(4):
             observation, reward, done, info = \
                 super(my_UpNDownEnv, self)._step(action)
-            print(reward)
-            print(info)
+            #print(reward)
+            #print(info)
             if i == 0:
                 ob_list = observation
             else:
