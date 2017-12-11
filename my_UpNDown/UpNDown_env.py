@@ -21,7 +21,6 @@ class my_UpNDownEnv(AtariEnv):
                 ob_list = np.append(ob_list, observation, axis = 0)
             reward_sum += reward
             if done:
-                print ("xxxxxxxxxxxxxxxxxxxxxxxxxx")
                 if i != 3:
                     for _ in range(i+1, 4):
                         ob_list = np.append(ob_list, observation, axis = 0)

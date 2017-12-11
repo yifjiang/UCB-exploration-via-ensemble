@@ -277,7 +277,6 @@ def learn(env,
             frame_rewards.append(rew)
             mean_frame100_rewards.append(round(np.mean(frame_rewards[-100:]), 5))
             mean_episode100_rewards.append(round(np.mean(episode_rewards[-101:-1]), 1))
-            print (done)
             if done:
                 obs = env.reset()
                 episode_rewards.append(0.0)
@@ -302,7 +301,7 @@ def learn(env,
 
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             num_episodes = len(episode_rewards)
-            print (num_episodes)
+            #print (num_episodes)
             if done and print_freq is not None and len(episode_rewards) % print_freq == 0:
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)
