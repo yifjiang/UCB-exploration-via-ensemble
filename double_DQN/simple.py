@@ -277,6 +277,7 @@ def learn(env,
             frame_rewards.append(rew)
             mean_frame100_rewards.append(round(np.mean(frame_rewards[-100:]), 5))
             mean_episode100_rewards.append(round(np.mean(episode_rewards[-101:-1]), 1))
+            print (done)
             if done:
                 obs = env.reset()
                 episode_rewards.append(0.0)
