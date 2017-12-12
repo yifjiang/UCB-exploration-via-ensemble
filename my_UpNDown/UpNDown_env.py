@@ -25,8 +25,8 @@ class my_UpNDownEnv(AtariEnv):
             reward_sum += reward
             if done:
                 if i != 3:
-                    for _ in range(i+1, 4):
-                        ob_list[i * 210:(i+1)*210, :, :]= observation
+                    for j in range(i+1, 4):
+                        ob_list[j * 210:(j+1)*210, :, :]= observation
                         # ob_list = np.append(ob_list, observation, axis = 0)
                         reward_sum += reward
                 break
