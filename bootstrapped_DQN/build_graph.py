@@ -368,7 +368,7 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
 
         weighted_error_array = []
 
-        for i in range(0, tf.shape(q_t_stack)):
+        for i in range(0, tf.shape(q_t_stack)[0]):
             with tf.variable_scope("loss_" + str(i)):
                 q_t = q_t_stack[i]
                 q_tp1 = q_tp1_stack[i]
