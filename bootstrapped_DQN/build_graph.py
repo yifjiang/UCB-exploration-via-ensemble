@@ -369,28 +369,29 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
         weighted_error_array = []
 
         for i in range(0, tf.shape(q_t_stack)):
-            q_t = q_t_stack[i]
-            q_tp1 = q_tp1_stack[i]
-            # q scores for actions which we know were selected in the given state.
-            q_t_selected = tf.reduce_sum(q_t * tf.one_hot(act_t_ph, num_actions), 1)
+            with tf.variable_scope("loss_" + str(i)):
+                q_t = q_t_stack[i]
+                q_tp1 = q_tp1_stack[i]
+                # q scores for actions which we know were selected in the given state.
+                q_t_selected = tf.reduce_sum(q_t * tf.one_hot(act_t_ph, num_actions), 1)
 
-            # compute estimate of best possible value starting from state at t + 1
-            if double_q:
-                q_tp1_using_online_net = q_func(obs_tp1_input.get(), num_actions, scope="q_func", reuse=True)
-                q_tp1_best_using_online_net = tf.arg_max(q_tp1_using_online_net, 1)
-                q_tp1_best = tf.reduce_sum(q_tp1 * tf.one_hot(q_tp1_best_using_online_net, num_actions), 1)
-            else:
-                q_tp1_best = tf.reduce_max(q_tp1, 1)
-            q_tp1_best_masked = (1.0 - done_mask_ph) * q_tp1_best
+                # compute estimate of best possible value starting from state at t + 1
+                if double_q:
+                    q_tp1_using_online_net = q_func(obs_tp1_input.get(), num_actions, scope="q_func", reuse=True)
+                    q_tp1_best_using_online_net = tf.arg_max(q_tp1_using_online_net, 1)
+                    q_tp1_best = tf.reduce_sum(q_tp1 * tf.one_hot(q_tp1_best_using_online_net, num_actions), 1)
+                else:
+                    q_tp1_best = tf.reduce_max(q_tp1, 1)
+                q_tp1_best_masked = (1.0 - done_mask_ph) * q_tp1_best
 
-            # compute RHS of bellman equation
-            q_t_selected_target = rew_t_ph + gamma * q_tp1_best_masked
+                # compute RHS of bellman equation
+                q_t_selected_target = rew_t_ph + gamma * q_tp1_best_masked
 
-            # compute the error (potentially clipped)
-            td_error = q_t_selected - tf.stop_gradient(q_t_selected_target)
-            errors = U.huber_loss(td_error)
-            weighted_error = tf.reduce_mean(importance_weights_ph * errors)
-            weighted_error_array.append(weighted_error)
+                # compute the error (potentially clipped)
+                td_error = q_t_selected - tf.stop_gradient(q_t_selected_target)
+                errors = U.huber_loss(td_error)
+                weighted_error = tf.reduce_mean(importance_weights_ph * errors)
+                weighted_error_array.append(weighted_error)
 
         weighted_error = tf.stack(weighted_error_array)
         weighted_error = tf.reduce_mean(weighted_error)
