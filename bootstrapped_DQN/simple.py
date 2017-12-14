@@ -7,12 +7,12 @@ import cloudpickle
 import numpy as np
 
 import gym
-from double_DQN.build_graph import build_train
-import double_DQN.models
+from bootstrapped_DQN.build_graph import build_train
+import bootstrapped_DQN.models
 import baselines.common.tf_util as U
 from baselines import logger
 from baselines.common.schedules import LinearSchedule
-from double_DQN.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
+from bootstrapped_DQN.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
 from baselines.common.misc_util import (
     boolean_flag,
     pickle_load,
@@ -181,6 +181,10 @@ def learn(env,
     def make_obs_ph(name):
         return U.BatchInput(observation_space_shape, name=name)
 
+    global_step = tf.Variable(0, trainable=False)
+
+    lr = tf.train.polynomial_decay(1e-4, global_step, decay_steps=4e6, end_learning_rate=5e-5)
+
     act, train, update_target, debug = build_train(
         make_obs_ph=make_obs_ph,
         q_func=q_func,
@@ -189,7 +193,7 @@ def learn(env,
         gamma=gamma,
         grad_norm_clipping=10,
         param_noise=param_noise,
-        double_q = True
+        double_q = False
     )
 
     act_params = {
@@ -233,6 +237,7 @@ def learn(env,
         model_saved = False
         model_file = os.path.join(td, "model")
         for t in range(max_timesteps):
+
             if callback is not None:
                 if callback(locals(), globals()):
                     break
@@ -296,6 +301,7 @@ def learn(env,
 
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             num_episodes = len(episode_rewards)
+            #print (num_episodes)
             if done and print_freq is not None and len(episode_rewards) % print_freq == 0:
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)
@@ -305,11 +311,8 @@ def learn(env,
                 logger.record_tabular("% time spent exploring", int(100 * update_eps))
                 logger.dump_tabular()
                 logger.log("Saving rewards")
-                jiangFile = open('./mean_frame100_rewards.bin','wb')
-                pickle.dump(mean_frame100_rewards,jiangFile)
-                jiangFile.close()
-                jiangFile = open('./mean_episode100_rewards.bin','wb')
-                pickle.dump(mean_episode100_rewards, jiangFile)
+                jiangFile = open('./reward_stats_UCBensemble.bin','wb')
+                pickle.dump((mean_frame100_rewards, mean_episode100_rewards, episode_rewards, frame_rewards), jiangFile)
                 jiangFile.close()
 
             if (checkpoint_freq is not None and t > learning_starts and

@@ -53,6 +53,7 @@ def _cnn_to_mlp(convs, hiddens, dueling, inpt, num_actions, scope, reuse=False, 
                 action_scores = layers.fully_connected(action_out, num_outputs=num_actions, activation_fn=None)
                 action_scores_collection.append(action_scores)
         action_scores_stack = tf.stack(action_scores_collection)
+        return action_scores_stack #disregard the following part
         action_scores_mean, action_scores_variance = tf.nn.moments(action_scores_stack, axes = [0])
         action_scores_stdv = tf.sqrt(action_scores_variance)
 
@@ -71,7 +72,7 @@ def _cnn_to_mlp(convs, hiddens, dueling, inpt, num_actions, scope, reuse=False, 
             action_scores_centered = action_scores - tf.expand_dims(action_scores_mean, 1)
             q_out = state_score + action_scores_centered
         else:
-            q_out = action_scores + exploration_weight * action_scores_stdv
+            q_out = action_scores_mean + exploration_weight * action_scores_stdv
         return q_out
 
 
