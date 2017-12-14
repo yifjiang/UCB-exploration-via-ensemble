@@ -284,7 +284,7 @@ def build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope="deepq", 
 
 
 def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=None, gamma=1.0,
-    double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None):
+    double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None, num_head = 10):
     """Creates the train function:
 
     Parameters
@@ -368,7 +368,7 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
 
         weighted_error_array = []
 
-        for i in range(0, tf.shape(q_t_stack)[0]):
+        for i in range(0, num_head):
             with tf.variable_scope("loss_" + str(i)):
                 q_t = q_t_stack[i]
                 q_tp1 = q_tp1_stack[i]
