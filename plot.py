@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-file = open("",'rb')
+file = open("./reward_stats.bin",'rb')
 mean_frame100_rewards, mean_episode100_rewards, episode_rewards, frame_rewards = pickle.load(file)
 l = []
 l[0] = frame_rewards[0]
