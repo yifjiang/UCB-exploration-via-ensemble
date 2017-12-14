@@ -244,13 +244,14 @@ def learn(env,
             # Take action and update exploration to the newest value
             kwargs = {}
             if not param_noise:
-                if t < 1e6:
-                    update_eps = 1 - t * (9e-7)
-                elif t < 5e6:
-                    update_eps = 0.1225 - t * (2.25e-8)
-                else:
-                    update_eps = 0.01
-                update_param_noise_threshold = 0
+                # if t < 1e6:
+                #     update_eps = 1 - t * (9e-7)
+                # elif t < 5e6:
+                #     update_eps = 0.1225 - t * (2.25e-8)
+                # else:
+                #     update_eps = 0.01
+                # update_param_noise_threshold = 0
+                update_eps = 0.
             else:
                 update_eps = 0.
                 # Compute the threshold such that the KL divergence between perturbed and non-perturbed
