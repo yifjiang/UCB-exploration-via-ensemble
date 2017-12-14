@@ -104,7 +104,8 @@ def learn(env,
           prioritized_replay_beta_iters=None,
           prioritized_replay_eps=1e-6,
           param_noise=False,
-          callback=None):
+          callback=None,
+          exploration_weight=1):
     """Train a deepq model.
 
     Parameters
@@ -193,7 +194,8 @@ def learn(env,
         gamma=gamma,
         grad_norm_clipping=10,
         param_noise=param_noise,
-        double_q = False
+        double_q = False,
+        exploration_weight=1
     )
 
     act_params = {

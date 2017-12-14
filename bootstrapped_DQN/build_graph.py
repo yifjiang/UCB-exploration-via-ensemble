@@ -113,7 +113,7 @@ def default_param_noise_filter(var):
     return False
 
 
-def build_act(make_obs_ph, q_func, num_actions, scope="deepq", reuse=None, exploration_weight = 0.1):
+def build_act(make_obs_ph, q_func, num_actions, scope="deepq", reuse=None, exploration_weight = 1):
     """Creates the act function:
 
     Parameters
@@ -143,6 +143,7 @@ def build_act(make_obs_ph, q_func, num_actions, scope="deepq", reuse=None, explo
         function to select and action given observation.
 `       See the top of the file for details.
     """
+    print("lambda=",exploration_weight)
     with tf.variable_scope(scope, reuse=reuse):
         observations_ph = U.ensure_tf_input(make_obs_ph("observation"))
         stochastic_ph = tf.placeholder(tf.bool, (), name="stochastic")
@@ -284,7 +285,7 @@ def build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope="deepq", 
 
 
 def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=None, gamma=1.0,
-    double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None, num_head = 10):
+    double_q=True, scope="deepq", reuse=None, param_noise=False, param_noise_filter_func=None, num_head = 5, exploration_weight=1):
     """Creates the train function:
 
     Parameters
@@ -345,7 +346,7 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
         print("+++++++++++not_double++++++++++++")
     if param_noise:
         act_f = build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse,
-            param_noise_filter_func=param_noise_filter_func)
+            param_noise_filter_func=param_noise_filter_func, exploration_weight=exploration_weight)
     else:
         act_f = build_act(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse)
 

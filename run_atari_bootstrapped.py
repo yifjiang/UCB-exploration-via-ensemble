@@ -17,6 +17,7 @@ def main():
     parser.add_argument('--prioritized', type=int, default=1)
     parser.add_argument('--dueling', type=int, default=1)
     parser.add_argument('--num-timesteps', type=int, default=int(1e7))
+    parser.add_argument('--exploration_weight', type=float, default=float(1))
     args = parser.parse_args()
     logger.configure()
     set_global_seeds(args.seed)
@@ -40,7 +41,8 @@ def main():
         learning_starts=10000,
         target_network_update_freq=10000,
         gamma=0.99,
-        prioritized_replay=bool(args.prioritized)
+        prioritized_replay=bool(args.prioritized),
+        exploration_weight=args.exploration_weight
     )
     # act.save("pong_model.pkl") XXX
     env.close()
