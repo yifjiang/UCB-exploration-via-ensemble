@@ -348,7 +348,7 @@ def build_train(make_obs_ph, q_func, num_actions, optimizer, grad_norm_clipping=
         act_f = build_act_with_param_noise(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse,
             param_noise_filter_func=param_noise_filter_func, exploration_weight=exploration_weight)
     else:
-        act_f = build_act(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse)
+        act_f = build_act(make_obs_ph, q_func, num_actions, scope=scope, reuse=reuse, exploration_weight=exploration_weight)
 
     with tf.variable_scope(scope, reuse=reuse):
         # set up placeholders
