@@ -1,4 +1,4 @@
-This repository includes two algorithms to run on atari environments.
+This repository contains the code for paper REPRODUCING: UCB EXPLORATION VIA Q-ENSEMBLES.
 
 # How to Run
 
