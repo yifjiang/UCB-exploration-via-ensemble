@@ -7,12 +7,12 @@ import cloudpickle
 import numpy as np
 
 import gym
-from bootstrapped_DQN.build_graph import build_train
-import bootstrapped_DQN.models
+from UCB_Ensemble.build_graph import build_train
+import UCB_Ensemble.models
 import baselines.common.tf_util as U
 from baselines import logger
 from baselines.common.schedules import LinearSchedule
-from bootstrapped_DQN.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
+from UCB_Ensemble.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
 from baselines.common.misc_util import (
     boolean_flag,
     pickle_load,
@@ -217,12 +217,6 @@ def learn(env,
     else:
         replay_buffer = ReplayBuffer(buffer_size)
         beta_schedule = None
-    # Create the schedule for exploration starting from 1.
-    '''
-    exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * max_timesteps),
-                                 initial_p=1.0,
-                                 final_p=exploration_final_eps)
-    '''
 
     # Initialize the parameters and copy them to the target network.
     U.initialize()
@@ -246,13 +240,7 @@ def learn(env,
             # Take action and update exploration to the newest value
             kwargs = {}
             if not param_noise:
-                # if t < 1e6:
-                #     update_eps = 1 - t * (9e-7)
-                # elif t < 5e6:
-                #     update_eps = 0.1225 - t * (2.25e-8)
-                # else:
-                #     update_eps = 0.01
-                # update_param_noise_threshold = 0
+                # there is no exploration factor in UCB
                 update_eps = 0.
             else:
                 update_eps = 0.
@@ -304,7 +292,6 @@ def learn(env,
 
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             num_episodes = len(episode_rewards)
-            #print (num_episodes)
             if done and print_freq is not None and len(episode_rewards) % print_freq == 0:
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)

@@ -1,8 +1,8 @@
 import gym
 
-from bootstrapped_DQN import models
-from bootstrapped_DQN import simple
-from bootstrapped_DQN import wrap_atari_dqn
+from UCB_Ensemble import models
+from UCB_Ensemble import simple
+from UCB_Ensemble import wrap_atari_dqn
 from baselines.common import set_global_seeds
 from baselines import bench
 import argparse
@@ -12,7 +12,7 @@ import my_UpNDown
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--env', help='environment ID', default='BreakoutNoFrameskip-v4')
+    parser.add_argument('--env', help='environment ID', default='CartPole-v0')
     parser.add_argument('--seed', help='RNG seed', type=int, default=0)
     parser.add_argument('--prioritized', type=int, default=1)
     parser.add_argument('--dueling', type=int, default=1)
@@ -21,18 +21,15 @@ def main():
     args = parser.parse_args()
     logger.configure()
     set_global_seeds(args.seed)
-    env = make_atari(args.env)
-    env = bench.Monitor(env, logger.get_dir())
-    env = wrap_atari_dqn(env)
+    env = gym.make(args.env)
     model = models.cnn_to_mlp(
-        convs=[(32, 8, 4), (64, 4, 2), (64, 3, 1)],
+        convs=[],
         hiddens=[256],
         dueling=bool(args.dueling),
     )
     act = simple.learn(
         env,
         batch_size=32,
-        # buffer_size=1000000,
         q_func=model,
         lr=1e-4,
         max_timesteps=args.num_timesteps,
@@ -44,7 +41,6 @@ def main():
         prioritized_replay=bool(args.prioritized),
         exploration_weight=args.exploration_weight
     )
-    # act.save("pong_model.pkl") XXX
     env.close()
 
 

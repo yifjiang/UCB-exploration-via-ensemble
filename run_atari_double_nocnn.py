@@ -21,9 +21,6 @@ def main():
     logger.configure()
     set_global_seeds(args.seed)
     env = gym.make(args.env)
-    # env = make_atari(args.env)
-    # env = bench.Monitor(env, logger.get_dir())
-    # env = wrap_atari_dqn(env)
     model = models.cnn_to_mlp(
         convs=[],
         hiddens=[256],
@@ -32,7 +29,6 @@ def main():
     act = simple2.learn(
         env,
         batch_size=32,
-        # buffer_size=1000000,
         q_func=model,
         lr=1e-4,
         max_timesteps=args.num_timesteps,
@@ -43,7 +39,6 @@ def main():
         gamma=0.99,
         prioritized_replay=bool(args.prioritized)
     )
-    # act.save("pong_model.pkl") XXX
     env.close()
 
 

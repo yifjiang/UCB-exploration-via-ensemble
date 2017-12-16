@@ -154,7 +154,7 @@ def build_act(make_obs_ph, q_func, num_actions, scope="deepq", reuse=None, explo
         action_scores_stack = q_func(observations_ph.get(), num_actions, scope="q_func")
         action_scores_mean, action_scores_variance = tf.nn.moments(action_scores_stack, axes = [0])
         action_scores_stdv = tf.sqrt(action_scores_variance)
-        q_values = action_scores_mean + exploration_weight * action_scores_stdv
+        q_values = action_scores_mean + exploration_weight * action_scores_stdv#UCB
         deterministic_actions = tf.argmax(q_values, axis=1)
 
         batch_size = tf.shape(observations_ph.get())[0]

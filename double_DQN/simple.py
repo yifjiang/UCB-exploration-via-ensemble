@@ -215,12 +215,6 @@ def learn(env,
     else:
         replay_buffer = ReplayBuffer(buffer_size)
         beta_schedule = None
-    # Create the schedule for exploration starting from 1.
-    '''
-    exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * max_timesteps),
-                                 initial_p=1.0,
-                                 final_p=exploration_final_eps)
-    '''
 
     # Initialize the parameters and copy them to the target network.
     U.initialize()
@@ -244,6 +238,7 @@ def learn(env,
             # Take action and update exploration to the newest value
             kwargs = {}
             if not param_noise:
+                #Exploration schedule
                 if t < 1e6:
                     update_eps = 1 - t * (9e-7)
                 elif t < 5e6:
@@ -301,7 +296,6 @@ def learn(env,
 
             mean_100ep_reward = round(np.mean(episode_rewards[-101:-1]), 1)
             num_episodes = len(episode_rewards)
-            #print (num_episodes)
             if done and print_freq is not None and len(episode_rewards) % print_freq == 0:
                 logger.record_tabular("steps", t)
                 logger.record_tabular("episodes", num_episodes)
