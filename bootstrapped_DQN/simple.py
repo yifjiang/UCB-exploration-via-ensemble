@@ -195,7 +195,7 @@ def learn(env,
         grad_norm_clipping=10,
         param_noise=param_noise,
         double_q = False,
-        exploration_weight=1
+        exploration_weight=exploration_weight
     )
 
     act_params = {
