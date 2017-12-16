@@ -1,5 +1,3 @@
-<img src="data/logo.jpg" width=25% align="right" />
-
 This repository includes two algorithms to run on atari environments.
 
 # How to Run
